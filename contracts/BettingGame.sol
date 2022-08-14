@@ -14,14 +14,15 @@ contract BettingGame is VRFConsumerBase {
 
     struct Game {
         uint256 id;
-        bool heads;
+        bool head;
         uint256 amount;
         address payable player;
     }
 
+    event RequestedRandomness(bytes32 requestId);
     event Withdraw(address admin, uint256 amount);
     event Received(address indexed sender, uint256 amount);
-    event Result(bytes32 indexed requestId, address player, uint256 amount, bool won);
+    event Result(uint256 indexed gameId, address player, uint256 amount, bool won);
 
     constructor(
         address _vrfCoordinator,
@@ -43,35 +44,37 @@ contract BettingGame is VRFConsumerBase {
         _;
     }
 
-    // _heads represents whether player has chosen Heads or not
-    function play(bool _heads) public payable returns (uint256){
+    // _head represents whether player has chosen Head or not
+    function play(bool _head) public payable returns (uint256){
         require(msg.value >= 10 ** 15, "BettingGame: minimum allowed bet is 0.001 ether");
-        require(address(this).balance >= msg.value, "BettingGame: insufficient vault balance");
+        require(address(this).balance >= 2 * msg.value, "BettingGame: insufficient vault balance");
         require(LINK.balanceOf(address(this)) >= fee, "BettingGame: insufficient LINK token");
 
         gameCount++;
-        games[gameCount] = Game(gameCount, _heads, msg.value, payable(msg.sender));
+        games[gameCount] = Game(gameCount, _head, msg.value, payable(msg.sender));
 
         bytes32 requestId = requestRandomness(keyhash, fee);
         requestIdToGameIdMapping[requestId] = gameCount;
+
+        emit RequestedRandomness(requestId);
 
         return gameCount;
     }
 
     function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
-        // even number represents Heads, odd number represents Tails
-        bool heads = _randomness % 2 == 0;
+        // even number represents Head, odd number represents Tail
+        bool head = _randomness % 2 == 0;
 
         uint256 gameId = requestIdToGameIdMapping[_requestId];
         Game memory game = games[gameId];
-        bool playerWon = heads == game.heads;
+        bool playerWon = head == game.head;
 
         if (playerWon) {
             uint256 winAmount = 2 * game.amount;
             game.player.transfer(winAmount);
         }
 
-        emit Result(_requestId, game.player, game.amount, playerWon);
+        emit Result(gameId, game.player, game.amount, playerWon);
     }
 
     function withdrawLink(uint256 amount) external onlyAdmin {
