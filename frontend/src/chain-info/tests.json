@@ -1,0 +1,31 @@
+{
+  "contracts": {
+    "BettingGame": "06aac035d4b1d0ac21993b0affc81ca5e229cdbf",
+    "LinkToken": "49e7bae2df618e81d877632c6ad55872ff2ce801",
+    "VRFCoordinatorMock": "50b10027797b93250cffdfccb9eaa7b52fcfd1b9",
+    "smartcontractkit/chainlink-brownie-contracts@0.4.2/BasicToken": "92084ac5279a2a3db988d9e01d7e6d3e3a4dab8d",
+    "smartcontractkit/chainlink-brownie-contracts@0.4.2/SafeMathChainlink": "bf84f5dba942291289c80f271862cb515ce813ab",
+    "smartcontractkit/chainlink-brownie-contracts@0.4.2/StandardToken": "7f21b0e2f1d1fcf89f4466183c9e73bc3cf77276",
+    "smartcontractkit/chainlink-brownie-contracts@0.4.2/VRFRequestIDBase": "73df0a6f5d0123eb2b2db0faf62b602aa77c123a"
+  },
+  "tests": {
+    "tests/test_betting_game.py": {
+      "coverage": false,
+      "isolated": false,
+      "results": ".....",
+      "sha1": "30dd9bffb30063eddabf848d1e8f3eb692ff09a8",
+      "txhash": [
+        "1c9c4d7613d0ff7e19444e8538bc3842816a19cc",
+        "489761880e188297a013c12bc7fc052835ed7275",
+        "dc72b3d1ca5549929118bc48f9b87858dfe1327c",
+        "f2ba34dbc5e9c5c29f1e7df790718e9fcdc6a180"
+      ]
+    }
+  },
+  "tx": {
+    "1c9c4d7613d0ff7e19444e8538bc3842816a19cc": {},
+    "489761880e188297a013c12bc7fc052835ed7275": {},
+    "dc72b3d1ca5549929118bc48f9b87858dfe1327c": {},
+    "f2ba34dbc5e9c5c29f1e7df790718e9fcdc6a180": {}
+  }
+}
