@@ -50,26 +50,26 @@ function App() {
         if (betAmount < 0.001 || betAmount > +utils.formatEther(contractBalance))
             return
         try {
-            const startTime = new Date()
             setLoading(true)
             const gameId = await contract.callStatic.play(head, {value: utils.parseEther(betAmount)})
             console.log(gameId)
-            const filter = contract.filters.Result(gameId)
-            contract.once(filter, (gameId, player, amount, won) => {
-                console.log(gameId.toNumber(), player, utils.formatEther(amount), won)
-                console.log('Time taken:', new Date() - startTime)
-                setLoading(false)
-                setAlert({
-                    className: won ? 'success' : 'danger',
-                    result: won ? 'WON' : 'LOST',
-                    outcome: won ? (head ? 'HEADS' : 'TAILS') : (head ? 'TAILS' : 'HEADS')
-                })
-                setTimeout(() => setAlert(null), 2000)
-            })
-            const tx = await contract.play(head, {value: utils.parseEther(betAmount)})
-            await tx.wait(1)
+            // const filter = contract.filters.Result(gameId)
+            // contract.once(filter, (gameId, player, amount, won) => {
+            //     console.log(gameId.toNumber(), player, utils.formatEther(amount), won)
+            //     console.log('Time taken:', new Date() - startTime)
+            //     setLoading(false)
+            //     setAlert({
+            //         className: won ? 'success' : 'danger',
+            //         result: won ? 'WON' : 'LOST',
+            //         outcome: won ? (head ? 'HEADS' : 'TAILS') : (head ? 'TAILS' : 'HEADS')
+            //     })
+            //     setTimeout(() => setAlert(null), 2000)
+            // })
+            // const tx = await contract.play(head, {value: utils.parseEther(betAmount)})
+            // await tx.wait(1)
         } catch (e) {
             console.error(e)
+            setLoading(false)
         }
     }
 

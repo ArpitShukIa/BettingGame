@@ -1,31 +1,27 @@
 {
   "contracts": {
-    "BettingGame": "06aac035d4b1d0ac21993b0affc81ca5e229cdbf",
-    "LinkToken": "49e7bae2df618e81d877632c6ad55872ff2ce801",
-    "VRFCoordinatorMock": "50b10027797b93250cffdfccb9eaa7b52fcfd1b9",
-    "smartcontractkit/chainlink-brownie-contracts@0.4.2/BasicToken": "92084ac5279a2a3db988d9e01d7e6d3e3a4dab8d",
-    "smartcontractkit/chainlink-brownie-contracts@0.4.2/SafeMathChainlink": "bf84f5dba942291289c80f271862cb515ce813ab",
-    "smartcontractkit/chainlink-brownie-contracts@0.4.2/StandardToken": "7f21b0e2f1d1fcf89f4466183c9e73bc3cf77276",
-    "smartcontractkit/chainlink-brownie-contracts@0.4.2/VRFRequestIDBase": "73df0a6f5d0123eb2b2db0faf62b602aa77c123a"
+    "BettingGame": "1f93d2b49846f11c0d4b97f57098e0bc6da1b485",
+    "MockVRFCoordinatorV2": "15c262619da014f803cc56cf47e0ec1d9177a8ef",
+    "smartcontractkit/chainlink-brownie-contracts@0.4.2/VRFCoordinatorV2Mock": "5cdfe95cb801e71f3ab974b3a7e58d50084bab4e"
   },
   "tests": {
     "tests/test_betting_game.py": {
       "coverage": false,
       "isolated": false,
-      "results": ".....",
-      "sha1": "30dd9bffb30063eddabf848d1e8f3eb692ff09a8",
+      "results": "...",
+      "sha1": "8abff6efef10da35e105b680119f11a8eaa21ccf",
       "txhash": [
-        "1c9c4d7613d0ff7e19444e8538bc3842816a19cc",
-        "489761880e188297a013c12bc7fc052835ed7275",
-        "dc72b3d1ca5549929118bc48f9b87858dfe1327c",
-        "f2ba34dbc5e9c5c29f1e7df790718e9fcdc6a180"
+        "2802b1a8f5cf3e160b930636ddf0d22067338798",
+        "b1e20122dcecee29d35ea4f69a66f731c2840ade",
+        "d03fd73088fb792ffaef0514be8a213287d1add3",
+        "dc70f4d9f93f9f5492f10ceca29fceeabd8f3db7"
       ]
     }
   },
   "tx": {
-    "1c9c4d7613d0ff7e19444e8538bc3842816a19cc": {},
-    "489761880e188297a013c12bc7fc052835ed7275": {},
-    "dc72b3d1ca5549929118bc48f9b87858dfe1327c": {},
-    "f2ba34dbc5e9c5c29f1e7df790718e9fcdc6a180": {}
+    "2802b1a8f5cf3e160b930636ddf0d22067338798": {},
+    "b1e20122dcecee29d35ea4f69a66f731c2840ade": {},
+    "d03fd73088fb792ffaef0514be8a213287d1add3": {},
+    "dc70f4d9f93f9f5492f10ceca29fceeabd8f3db7": {}
   }
 }

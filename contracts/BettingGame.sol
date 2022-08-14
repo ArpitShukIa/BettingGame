@@ -1,16 +1,23 @@
 pragma solidity ^0.8.0;
 
-import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-contract BettingGame is VRFConsumerBase {
+contract BettingGame is VRFConsumerBaseV2 {
 
-    uint256 public fee;
-    bytes32 public keyhash;
     address payable admin;
+
+    VRFCoordinatorV2Interface COORDINATOR;
+    bytes32 keyhash;
+    uint64 subscriptionId;
+    uint16 requestConfirmations = 3;
+    uint32 numWords = 50;
+    uint32 callbackGasLimit = 10 ** 7;
+
+    uint256[] randomWords;
 
     uint256 public gameCount = 0;
     mapping(uint256 => Game) public games;
-    mapping(bytes32 => uint256) public requestIdToGameIdMapping;
 
     struct Game {
         uint256 id;
@@ -19,20 +26,20 @@ contract BettingGame is VRFConsumerBase {
         address payable player;
     }
 
-    event RequestedRandomness(bytes32 requestId);
+    event RequestedRandomness(uint256 requestId);
     event Withdraw(address admin, uint256 amount);
     event Received(address indexed sender, uint256 amount);
     event Result(uint256 indexed gameId, address player, uint256 amount, bool won);
 
     constructor(
         address _vrfCoordinator,
-        address _link,
-        uint256 _fee,
-        bytes32 _keyhash
-    ) VRFConsumerBase(_vrfCoordinator, _link) {
+        bytes32 _keyhash,
+        uint64 _subscriptionId
+    ) VRFConsumerBaseV2(_vrfCoordinator) {
+        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         admin = payable(msg.sender);
-        fee = _fee;
         keyhash = _keyhash;
+        subscriptionId = _subscriptionId;
     }
 
     receive() external payable {
@@ -48,40 +55,51 @@ contract BettingGame is VRFConsumerBase {
     function play(bool _head) public payable returns (uint256){
         require(msg.value >= 10 ** 15, "BettingGame: minimum allowed bet is 0.001 ether");
         require(address(this).balance >= 2 * msg.value, "BettingGame: insufficient vault balance");
-        require(LINK.balanceOf(address(this)) >= fee, "BettingGame: insufficient LINK token");
+        require(randomWords.length > 0, "BettingGame: random words unavailable");
 
         gameCount++;
         games[gameCount] = Game(gameCount, _head, msg.value, payable(msg.sender));
 
-        bytes32 requestId = requestRandomness(keyhash, fee);
-        requestIdToGameIdMapping[requestId] = gameCount;
+        uint256 randomWord = randomWords[randomWords.length - 1];
+        randomWords.pop();
 
-        emit RequestedRandomness(requestId);
+        // Even randomWord represents HEADS, odd represents TAILS
+        bool head = randomWord % 2 == 0;
+        bool playerWon = head == _head;
+
+        if (playerWon) {
+            uint256 winAmount = 2 * msg.value;
+            payable(msg.sender).transfer(winAmount);
+        }
+
+        emit Result(gameCount, msg.sender, msg.value, playerWon);
 
         return gameCount;
     }
 
-    function fulfillRandomness(bytes32 _requestId, uint256 _randomness) internal override {
-        // even number represents Head, odd number represents Tail
-        bool head = _randomness % 2 == 0;
+    function requestRandomWords() public onlyAdmin {
+        // Will revert if subscription is not set and funded.
+        uint256 requestId = COORDINATOR.requestRandomWords(
+            keyhash,
+            subscriptionId,
+            requestConfirmations,
+            callbackGasLimit,
+            numWords
+        );
 
-        uint256 gameId = requestIdToGameIdMapping[_requestId];
-        Game memory game = games[gameId];
-        bool playerWon = head == game.head;
+        emit RequestedRandomness(requestId);
+    }
 
-        if (playerWon) {
-            uint256 winAmount = 2 * game.amount;
-            game.player.transfer(winAmount);
+    function fulfillRandomWords(
+        uint256 requestId,
+        uint256[] memory _randomWords
+    ) internal override {
+        for (uint i = 0; i < _randomWords.length; i++) {
+            randomWords.push(_randomWords[i]);
         }
-
-        emit Result(gameId, game.player, game.amount, playerWon);
     }
 
-    function withdrawLink(uint256 amount) external onlyAdmin {
-        require(LINK.transfer(msg.sender, amount), "BettingGame: LINK transfer failed");
-    }
-
-    function withdrawEther(uint256 amount) external payable onlyAdmin {
+    function withdrawEther(uint256 amount) external onlyAdmin {
         require(address(this).balance >= amount, "BettingGame: insufficient balance");
         admin.transfer(amount);
 

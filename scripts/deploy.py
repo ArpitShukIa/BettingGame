@@ -1,18 +1,18 @@
 import os
 import shutil
 
-from brownie import BettingGame, config, network
+from brownie import network, config, BettingGame
 
-from scripts.helpful_scripts import get_account, get_contract
+from scripts.helpful_scripts import get_account, get_vrf_coordinator_contract, LOCAL_BLOCKCHAIN_ENVIRONMENTS
 
 
 def deploy(update_frontend=False):
     account = get_account()
+    vrf_coordinator, subscription_id = get_vrf_coordinator_contract()
     betting_game = BettingGame.deploy(
-        get_contract("vrf_coordinator").address,
-        get_contract("link_token").address,
-        config["networks"][network.show_active()]["fee"],
+        vrf_coordinator.address,
         config["networks"][network.show_active()]["keyhash"],
+        subscription_id,
         {"from": account},
         publish_source=config["networks"][network.show_active()].get("verify", False)
     )
