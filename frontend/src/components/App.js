@@ -1,7 +1,7 @@
 import NavBar from "./NavBar";
 import {useEffect, useState} from "react";
 import {useEtherBalance, useEthers} from "@usedapp/core";
-import {BigNumber, FixedNumber, providers} from "ethers";
+import {providers} from "ethers";
 import {CircularProgress} from "@mui/material";
 import Main from "./Main";
 import {getDeployedContract} from "../contractUtils";
